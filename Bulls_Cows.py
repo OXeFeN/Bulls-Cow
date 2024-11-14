@@ -9,7 +9,7 @@ from random import randint, shuffle
 import json
 
 
-file_path = "High-score.txt"
+file_path = r"C:\Users\Admin\Documents\GitHub\Bulls-Cow\High-score.txt"
 
 def initialize():
     return [], [], []
@@ -149,10 +149,10 @@ def main_menu():
             """)
     
 #file functions
-def file_update(file_path, player, tries):
+def file_update(file_path, tries):
     try:
         with open(file_path, "a") as file:
-            file.write(f"{player}: {tries}\n")
+            file.write(f"{tries}\n")
             return True
     except OSError as error:
         print("Something goes wrong!", error)
@@ -177,7 +177,7 @@ def BullsCows():
                 print("Chosen mode: 4 DIGITS MODE")
                 noob_secret = validate_secret(str(randint(0,9999)), "9999")
                 tries = guess(noob_secret)
-                file_update(file_path, player, tries)
+                file_update(file_path, tries)
 
             elif user_choice == 2:
                 print("You choose a GOD MODE! Guessed number can be any number!")
