@@ -4,11 +4,12 @@
 #   and how many digits are guessed and stand in the right place (cows). After guessing the number,
 #   print the number of user's attempts. Use recursion in your game.
 
-from random import randint
+import random
+from random import randint, shuffle
 import json
 
 
-file_path = None
+file_path = "High-score.txt"
 
 def initialize():
     return [], [], []
@@ -82,12 +83,14 @@ def guess_bulls(imp, sec, bulls, checked):
             checked[index] = True
         else:
             checked[index] = False
+    random.shuffle(bulls)
     return bulls
 
 def guess_cow(imp, sec, cows):
     for index, num in enumerate(sec):
         if num in imp:
             cows.append(num)
+    random.shuffle(cows) #Milion dollar question: Why i need to shuffle those numbers?
     return cows
 
 def remover(sec, che):
@@ -99,6 +102,7 @@ def remover(sec, che):
 
 def guess(sec):
     tries = 0
+    player = str(input("Insert player name: ").strip())
     while True:
         imp = try_function(tries, sec)
         if str(imp) == str(sec):
@@ -113,7 +117,7 @@ def guess(sec):
             cows = guess_cow(imp, remover(sec, checked), cows)
             hint_bulls(bulls)
             hint_cows(cows)
-    return tries
+    return tries, player
 
 def hint_bulls(bulls):
     if not bulls:
@@ -145,10 +149,10 @@ def main_menu():
             """)
     
 #file functions
-def file_update(dic):
+def file_update(file_path, player, tries):
     try:
-        with open(file_path, "w") as file:
-            json.dump(dic, file, indent=4)
+        with open(file_path, "a") as file:
+            file.write(f"{player}: {tries}\n")
             return True
     except OSError as error:
         print("Something goes wrong!", error)
@@ -157,7 +161,7 @@ def file_update(dic):
 def file_load(file_path):
     try:
         with open(file_path, "r") as file:
-            output = json.load(file)  # Load as a dictionary
+            output = file.readlines(file)
         return output
     except OSError as error:
         print("Something goes wrong!", error)
@@ -172,15 +176,17 @@ def BullsCows():
             if user_choice == 1:
                 print("Chosen mode: 4 DIGITS MODE")
                 noob_secret = validate_secret(str(randint(0,9999)), "9999")
-                guess(noob_secret)
+                tries = guess(noob_secret)
+                file_update(file_path, player, tries)
 
             elif user_choice == 2:
                 print("You choose a GOD MODE! Guessed number can be any number!")
                 top_limit = god_top_rnd(int(input("Insert how many digits you can beat: ")))
                 god_secret = validate_secret(str(randint(0,top_limit)), str(top_limit))
                 guess(god_secret)
-
             elif user_choice == 3:
+                player = input("Insert player name: ").strip()
+            elif user_choice == 4:
                 print("WIP " * 5)
 
             elif user_choice == 0:
